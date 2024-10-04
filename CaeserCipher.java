@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -19,13 +21,10 @@ public class CaeserCipher {
      * 
      * @return text file as string
      */
-    public static String getTextString() {
+    public static String getTextString(String fileName) {
         StringBuilder sb = new StringBuilder();
         try (Scanner scanner = new Scanner(System.in)) {
 
-            String fileName = "";
-            System.out.println("Enter text file you would like to encrypt.");
-            fileName = scanner.next();
             try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
                 String line;
 
@@ -67,6 +66,21 @@ public class CaeserCipher {
         return sb.toString();
     }
 
+    /**
+     * Creates new text file for the encrypted text.
+     * 
+     * @param text     caeser cipher encrypted text.
+     * @param fileName name for text file.
+     */
+    public static void writeEncryptedTextFile(String text, String fileName) {
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+            bw.write(text);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             boolean choice = false;
@@ -77,7 +91,7 @@ public class CaeserCipher {
                     case 1:
 
                         String text = null;
-                        String encryptedString = null;
+                        String encryptedText = null;
                         boolean shiftChoice = false;
 
                         while (!shiftChoice) {
@@ -90,11 +104,13 @@ public class CaeserCipher {
                                 shiftChoice = true;
                             }
                         }
+                        String fileName = "";
+                        System.out.println("Enter text file you would like to encrypt.");
+                        fileName = scanner.next();
 
-                        text = getTextString().toUpperCase();
-                        System.out.println(text);
-                        encryptedString = performCaeserEncryption(text, shift);
-                        System.out.println(encryptedString);
+                        text = getTextString(fileName).toUpperCase();
+                        encryptedText = performCaeserEncryption(text, shift);
+                        writeEncryptedTextFile(encryptedText, "encrypted_" + fileName);
                         choice = true;
                         break;
                     case 2:
